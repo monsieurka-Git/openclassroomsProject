@@ -1,6 +1,6 @@
 Projet 2 — Testez et améliorez une application existante
 Dépôt : openclassroomsProject
-Étudiant : Karim
+Étudiant : Karim MEHENNI
 📌 Description du projet
 Ce dépôt contient le travail réalisé dans le cadre du Projet 2 du parcours Expert DevOps d’OpenClassrooms :
 Testez et améliorez une application existante (Backend & Frontend).
@@ -100,6 +100,4 @@ README structuré
 
 Dépôt GitHub propre et organisé (branche master) 
 
-👤 Auteur
-Karim  
-Parcours Expert DevOps — OpenClassrooms
+
