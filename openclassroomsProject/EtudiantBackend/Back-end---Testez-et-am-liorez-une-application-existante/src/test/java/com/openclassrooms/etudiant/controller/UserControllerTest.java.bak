@@ -1,0 +1,174 @@
+package com.openclassrooms.etudiant.controller;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.openclassrooms.etudiant.config.TestSecurityConfig;
+import com.openclassrooms.etudiant.dto.RegisterDTO;
+import com.openclassrooms.etudiant.entities.User;
+import com.openclassrooms.etudiant.mapper.UserDtoMapper;
+import com.openclassrooms.etudiant.repository.UserRepository;
+import com.openclassrooms.etudiant.service.JwtService;
+import com.openclassrooms.etudiant.service.UserService;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+
+@WebMvcTest(controllers = UserController.class)
+@AutoConfigureMockMvc(addFilters = false)
+@Import(TestSecurityConfig.class)
+public class UserControllerTest {
+
+    private static final String URL = "/api/auth/register";
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockBean
+    private UserService userService;
+
+    @MockBean
+    private UserDtoMapper userDtoMapper;
+
+    @MockBean
+    private JwtService jwtService;
+
+    @MockBean
+    private UserRepository userRepository;
+
+    @MockBean
+    private PasswordEncoder passwordEncoder;
+
+    // ---------------------------
+    // TESTS REGISTER
+    // ---------------------------
+
+    @Test
+    void registerUserWithoutRequiredData() throws Exception {
+        when(userService.login(any(), any())).thenReturn("fake-token");
+
+        RegisterDTO dto = new RegisterDTO();
+
+        mockMvc.perform(post(URL)
+                        .content(objectMapper.writeValueAsString(dto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void registerAlreadyExistUser() throws Exception {
+        when(userService.login(any(), any())).thenReturn("fake-token");
+
+        RegisterDTO dto = new RegisterDTO();
+        dto.setFirstName("John");
+        dto.setLastName("Doe");
+        dto.setLogin("login");
+        dto.setPassword("password");
+
+        User mappedUser = new User();
+        mappedUser.setFirstName(dto.getFirstName());
+        mappedUser.setLastName(dto.getLastName());
+        mappedUser.setLogin(dto.getLogin());
+        mappedUser.setPassword(dto.getPassword());
+
+        when(userDtoMapper.toEntity(any(RegisterDTO.class))).thenReturn(mappedUser);
+        doThrow(new IllegalStateException("User already exists"))
+                .when(userService).register(any(User.class));
+
+        mockMvc.perform(post(URL)
+                        .content(objectMapper.writeValueAsString(dto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    // ---------------------------
+    // TESTS LOGIN
+    // ---------------------------
+    // login avec des données correctes
+    @Test
+    void loginShouldReturnToken() throws Exception {
+        when(userService.login("john", "123456")).thenReturn("fake-token");
+
+        String jsonBody = """
+            {
+                "login": "john",
+                "password": "123456"
+            }
+            """;
+
+        mockMvc.perform(post("/api/auth/login")
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").value("fake-token"));
+    }
+    // login avec un mot de passe incorrect
+    @Test
+    void loginShouldReturnBadRequestWhenPasswordIsWrong() throws Exception {
+        when(userService.login("john", "wrongpass"))
+                .thenThrow(new IllegalArgumentException("Mot de passe incorrect"));
+
+        String jsonBody = """
+            {
+                "login": "john",
+                "password": "wrongpass"
+            }
+            """;
+
+        mockMvc.perform(post("/api/auth/login")
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    // login avec un login inexistant
+    @Test
+    void loginShouldReturnBadRequestWhenLoginDoesNotExist() throws Exception {
+        when(userService.login("unknown", "123456"))
+                .thenThrow(new IllegalArgumentException("Login incorrect"));
+
+        String jsonBody = """
+            {
+                "login": "unknown",
+                "password": "123456"
+            }
+            """;
+
+        mockMvc.perform(post("/api/auth/login")
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+    // login avec des champs manquants
+    @Test
+    void loginShouldReturnBadRequestWhenFieldsAreMissing() throws Exception {
+        when(userService.login("", ""))
+                .thenThrow(new IllegalArgumentException("Champs manquants"));
+
+        String jsonBody = """
+            {
+                "login": "",
+                "password": ""
+            }
+            """;
+
+        mockMvc.perform(post("/api/auth/login")
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+}

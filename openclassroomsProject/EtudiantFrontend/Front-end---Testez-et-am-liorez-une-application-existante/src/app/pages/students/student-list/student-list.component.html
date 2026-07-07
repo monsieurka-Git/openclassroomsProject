@@ -1,0 +1,12 @@
+<h2>Liste des étudiants</h2>
+
+<button routerLink="/students/add">Ajouter un étudiant</button>
+
+<ul>
+  <li *ngFor="let s of students">
+    {{ s.firstName }} {{ s.lastName }}
+    <button [routerLink]="['/students', s.id]">Détails</button>
+    <button [routerLink]="['/students/edit', s.id]">Modifier</button>
+    <button (click)="delete(s.id!)">Supprimer</button>
+  </li>
+</ul>

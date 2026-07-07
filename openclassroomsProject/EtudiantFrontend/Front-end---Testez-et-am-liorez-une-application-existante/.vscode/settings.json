@@ -1,0 +1,19 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "127.0.0.1",
+            "port": 51464,
+            "driver": "MySQL",
+            "name": "etudiant_db",
+            "group": "etudiant_db",
+            "database": "etudiant_db",
+            "username": "etudiant_db"
+        }
+    ]
+}

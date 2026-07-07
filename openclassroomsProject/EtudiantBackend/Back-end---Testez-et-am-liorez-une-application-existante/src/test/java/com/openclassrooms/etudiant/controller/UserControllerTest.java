@@ -1,0 +1,182 @@
+package com.openclassrooms.etudiant.controller;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.openclassrooms.etudiant.dto.RegisterDTO;
+import com.openclassrooms.etudiant.entities.User;
+import com.openclassrooms.etudiant.service.UserService;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@AutoConfigureMockMvc(addFilters = false)
+@ActiveProfiles("test")
+public class UserControllerTest {
+
+    private static final String URL_REGISTER = "/api/auth/register";
+    private static final String URL_LOGIN = "/api/auth/login";
+    private static final String URL_USERS = "/api/users";
+    private static final String FIRST_NAME = "John";
+    private static final String LAST_NAME = "Doe";
+    private static final String LOGIN = "login";
+    private static final String PASSWORD = "password";
+
+    @MockBean
+    private UserService userService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    // ---------------------------
+    // REGISTER TESTS
+    // ---------------------------
+
+    @Test
+    public void registerUserWithoutRequiredData() throws Exception {
+        RegisterDTO registerDTO = new RegisterDTO();
+
+        mockMvc.perform(MockMvcRequestBuilders.post(URL_REGISTER)
+                        .content(objectMapper.writeValueAsString(registerDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void registerAlreadyExistUser() throws Exception {
+        doThrow(new IllegalArgumentException("User exists"))
+                .when(userService).register(any());
+
+        RegisterDTO registerDTO = new RegisterDTO();
+        registerDTO.setFirstName(FIRST_NAME);
+        registerDTO.setLastName(LAST_NAME);
+        registerDTO.setLogin(LOGIN);
+        registerDTO.setPassword(PASSWORD);
+
+        mockMvc.perform(MockMvcRequestBuilders.post(URL_REGISTER)
+                        .content(objectMapper.writeValueAsString(registerDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void registerUserSuccessful() throws Exception {
+        RegisterDTO registerDTO = new RegisterDTO();
+        registerDTO.setFirstName(FIRST_NAME);
+        registerDTO.setLastName(LAST_NAME);
+        registerDTO.setLogin(LOGIN);
+        registerDTO.setPassword(PASSWORD);
+
+        mockMvc.perform(MockMvcRequestBuilders.post(URL_REGISTER)
+                        .content(objectMapper.writeValueAsString(registerDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+    }
+
+    // ---------------------------
+    // LOGIN TESTS
+    // ---------------------------
+
+    @Test
+    public void loginSuccess() throws Exception {
+        when(userService.login(any(), any())).thenReturn("TOKEN");
+
+        mockMvc.perform(MockMvcRequestBuilders.post(URL_LOGIN)
+                        .content("{\"login\":\"john\",\"password\":\"pass\"}")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.token").value("TOKEN"));
+    }
+
+    @Test
+    public void loginBadCredentials() throws Exception {
+        doThrow(new BadCredentialsException("Invalid credentials"))
+                .when(userService).login(any(), any());
+
+        mockMvc.perform(MockMvcRequestBuilders.post(URL_LOGIN)
+                        .content("{\"login\":\"john\",\"password\":\"wrong\"}")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
+
+    // ---------------------------
+    // GET ALL USERS
+    // ---------------------------
+
+    @Test
+    public void getAllUsersSuccess() throws Exception {
+        when(userService.getAllUsers()).thenReturn(List.of(new User(), new User()));
+
+        mockMvc.perform(MockMvcRequestBuilders.get(URL_USERS)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    // ---------------------------
+    // GET USER BY LOGIN
+    // ---------------------------
+
+    @Test
+    public void getUserByLoginSuccess() throws Exception {
+        when(userService.getUserByLogin(LOGIN)).thenReturn(new User());
+
+        mockMvc.perform(MockMvcRequestBuilders.get(URL_USERS + "/" + LOGIN)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void getUserByLoginNotFound() throws Exception {
+        when(userService.getUserByLogin(LOGIN)).thenReturn(null);
+
+        mockMvc.perform(MockMvcRequestBuilders.get(URL_USERS + "/" + LOGIN)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    // ---------------------------
+    // DELETE USER
+    // ---------------------------
+
+    @Test
+    public void deleteUserSuccess() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete(URL_USERS + "/" + LOGIN))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
+    @Test
+    public void deleteUserNotFound() throws Exception {
+        doThrow(new IllegalArgumentException("User not found"))
+                .when(userService).deleteUser(LOGIN);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete(URL_USERS + "/" + LOGIN))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+}

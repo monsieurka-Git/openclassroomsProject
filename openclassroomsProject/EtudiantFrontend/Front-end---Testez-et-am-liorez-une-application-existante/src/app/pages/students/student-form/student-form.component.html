@@ -1,0 +1,9 @@
+<h2>{{ isEdit ? 'Modifier un étudiant' : 'Ajouter un étudiant' }}</h2>
+
+<form (ngSubmit)="save()">
+  <input [(ngModel)]="student.firstName" name="firstName" placeholder="Prénom" required>
+  <input [(ngModel)]="student.lastName" name="lastName" placeholder="Nom" required>
+  <input [(ngModel)]="student.email" name="email" placeholder="Email" required>
+
+  <button type="submit">Enregistrer</button>
+</form>
