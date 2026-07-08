@@ -1,6 +1,7 @@
 package com.openclassrooms.etudiant.configuration.security;
 
 import com.openclassrooms.etudiant.service.JwtService;
+import com.openclassrooms.etudiant.service.TokenBlacklistService;
 import com.openclassrooms.etudiant.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,8 +19,9 @@ public class JwtAuthenticationFilterTest {
 
         JwtService jwtService = Mockito.mock(JwtService.class);
         UserRepository userRepository = Mockito.mock(UserRepository.class);
+        TokenBlacklistService tokenBlacklistService = Mockito.mock(TokenBlacklistService.class);
 
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtService, userRepository);
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtService, userRepository, tokenBlacklistService);
 
         String token = "Bearer faketoken";
 

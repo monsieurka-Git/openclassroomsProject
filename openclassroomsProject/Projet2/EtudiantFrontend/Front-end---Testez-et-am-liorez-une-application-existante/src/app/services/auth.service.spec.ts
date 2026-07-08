@@ -73,6 +73,11 @@ describe('AuthService', () => {
   test('should remove token from localStorage', () => {
     localStorage.setItem('token', 'xyz789');
     service.logout();
+
+    const req = httpMock.expectOne('http://localhost:8080/api/auth/logout');
+    expect(req.request.method).toBe('POST');
+    req.flush({});
+
     expect(localStorage.getItem('token')).toBeNull();
   });
 

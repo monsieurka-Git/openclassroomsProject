@@ -1,1 +1,5 @@
+<nav *ngIf="authService.isLogged()" class="navbar">
+  <span class="nav-title">Gestion Étudiants</span>
+  <button (click)="logout()" class="btn-logout">Déconnexion</button>
+</nav>
 <router-outlet/>

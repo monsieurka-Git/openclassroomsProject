@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ export class AuthService {
 
   private apiUrl = 'http://localhost:8080/api/auth';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   // 🔵 LOGIN
   login(login: string, password: string): Observable<any> {
@@ -31,9 +32,20 @@ export class AuthService {
     return localStorage.getItem('token');
   }
 
-  // 🔵 SUPPRESSION DU TOKEN
+  // 🔵 SUPPRESSION DU TOKEN + APPEL API BACKEND
   logout(): void {
+    const token = this.getToken();
+    if (token) {
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+      this.http.post(`${this.apiUrl}/logout`, {}, { headers }).subscribe({
+        next: () => console.log('Déconnexion côté backend réussie'),
+        error: (err) => console.error('Erreur lors du logout côté backend', err)
+      });
+    }
     localStorage.removeItem('token');
+    this.router.navigate(['/login']);
   }
 
   // 🔵 VÉRIFICATION DE CONNEXION

@@ -1,6 +1,7 @@
 package com.openclassrooms.etudiant.configuration.security;
 
 import com.openclassrooms.etudiant.service.JwtService;
+import com.openclassrooms.etudiant.service.TokenBlacklistService;
 import com.openclassrooms.etudiant.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,10 +20,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final TokenBlacklistService tokenBlacklistService;
 
-    public JwtAuthenticationFilter(JwtService jwtService, UserRepository userRepository) {
+    public JwtAuthenticationFilter(JwtService jwtService, UserRepository userRepository, TokenBlacklistService tokenBlacklistService) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
+        this.tokenBlacklistService = tokenBlacklistService;
     }
 
     @Override
@@ -41,6 +44,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Extraction du token
         String token = authHeader.substring(7);
+
+        // Vérifier si le token est blacklisté (logout)
+        if (tokenBlacklistService.isBlacklisted(token)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Token révoqué");
+            return;
+        }
+
         String login = jwtService.extractLogin(token);
 
         // Si login trouvé et pas déjà authentifié

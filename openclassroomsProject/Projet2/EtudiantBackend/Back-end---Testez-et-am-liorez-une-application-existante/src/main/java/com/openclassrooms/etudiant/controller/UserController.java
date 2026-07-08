@@ -4,6 +4,7 @@ import com.openclassrooms.etudiant.dto.LoginRequestDTO;
 import com.openclassrooms.etudiant.dto.RegisterDTO;
 import com.openclassrooms.etudiant.dto.UserDTO;
 import com.openclassrooms.etudiant.mapper.UserDtoMapper;
+import com.openclassrooms.etudiant.service.TokenBlacklistService;
 import com.openclassrooms.etudiant.service.UserService;
 
 import jakarta.validation.Valid;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -30,6 +32,7 @@ public class UserController {
 
     private final UserService userService;
     private final UserDtoMapper userDtoMapper;
+    private final TokenBlacklistService tokenBlacklistService;
 
     // ---------------------------
     // REGISTER
@@ -48,6 +51,18 @@ public class UserController {
         System.out.println(">>> CONTROLLER LOGIN REÇU <<<");
         String token = userService.login(loginDTO.getLogin(), loginDTO.getPassword());
         return ResponseEntity.ok(Map.of("token", token));
+    }
+
+    // ---------------------------
+    // LOGOUT
+    // ---------------------------
+    @PostMapping(path = {"/api/auth/logout", "/logout"})
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            tokenBlacklistService.blacklistToken(token);
+        }
+        return ResponseEntity.ok(Map.of("message", "Déconnexion réussie"));
     }
 
     // ---------------------------
