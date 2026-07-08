@@ -1,6 +1,7 @@
-Projet 2 — Testez et améliorez une application existante
-Dépôt : openclassroomsProject
+📘 Projet 2 — Testez et améliorez une application existante
+Dépôt : openclassroomsProject  
 Étudiant : Karim MEHENNI
+
 📌 Description du projet
 Ce dépôt contient le travail réalisé dans le cadre du Projet 2 du parcours Expert DevOps d’OpenClassrooms :
 Testez et améliorez une application existante (Backend & Frontend).
@@ -15,13 +16,13 @@ améliorer la qualité du code
 
 mettre en place une stratégie de tests complète
 
-produire un rapport de couverture
+produire un rapport de couverture (Jacoco / Cypress / Jest)
 
 livrer une application fonctionnelle, testée et structurée
 
-🗂️ Structure du dépôt
-Le dépôt est organisé comme suit :
+ajouter une nouvelle fonctionnalité : Logout (backend + frontend)
 
+🗂️ Structure du dépôt
 Code
 openclassroomsProject/
 └── Projet2/
@@ -37,24 +38,79 @@ openclassroomsProject/
         ├── angular.json
         └── package.json
 🔧 Backend — Spring Boot (Java)
+Fonctionnalités principales :
+
 API REST pour la gestion des étudiants
 
-Tests unitaires (JUnit, Mockito)
+Authentification JWT (login + logout)
 
-Tests d’intégration (MockMvc)
+Gestion des utilisateurs
 
-Rapport de couverture Jacoco
+Gestion des étudiants (CRUD)
 
-Corrections de bugs et améliorations de la qualité du code
+Validation des données
+
+Gestion centralisée des erreurs (GlobalExceptionHandler)
+
+✔ Tests backend
+Tests unitaires : JUnit, Mockito
+
+Tests d’intégration : MockMvc
+
+Rapport de couverture : Jacoco
+
+Couverture disponible dans :
+EtudiantBackend/target/site/jacoco/index.html
+
+✔ Nouvelle fonctionnalité : Logout (Backend)
+Endpoint ajouté :
+
+Code
+POST /api/auth/logout
+Fonctionnement :
+
+Invalidation du token côté serveur (selon stratégie choisie)
+
+Réponse confirmant la déconnexion
+
+Le frontend supprime le token localement
 
 🎨 Frontend — Angular
+Fonctionnalités principales :
+
 Interface de gestion des étudiants
 
-Tests E2E avec Cypress
+Authentification JWT (login + logout)
 
-Tests unitaires avec Jasmine/Karma
+Formulaires réactifs
 
-Amélioration de la navigation, des formulaires et de la gestion des erreurs
+Navigation protégée via AuthGuard
+
+Gestion des erreurs utilisateur
+
+✔ Tests frontend
+Tests E2E : Cypress
+
+Tests unitaires : Jasmine/Karma ou Jest
+
+Couverture disponible dans :
+EtudiantFrontend/coverage/
+
+✔ Nouvelle fonctionnalité : Logout (Frontend)
+Ajout d’un bouton Déconnexion :
+
+ts
+logout() {
+  localStorage.removeItem('token');
+  this.router.navigate(['/login']);
+}
+Effets :
+
+Suppression du token JWT
+
+Redirection automatique vers /login
+
+Désactivation des routes protégées
 
 🧪 Tests & Qualité
 Backend
@@ -62,14 +118,16 @@ Tests unitaires : services, contrôleurs
 
 Tests d’intégration : endpoints REST
 
-Couverture Jacoco : disponible dans target/site/jacoco/
+Couverture Jacoco :
+EtudiantBackend/target/site/jacoco/
 
 Frontend
-Tests E2E Cypress : login, CRUD étudiant
+Tests E2E Cypress : login, logout, CRUD étudiant
 
 Tests unitaires Angular
 
-Couverture : dossier coverage/
+Couverture :
+EtudiantFrontend/coverage/
 
 🚀 Lancer le projet
 Backend
@@ -77,7 +135,7 @@ bash
 cd Projet2/EtudiantBackend
 mvn spring-boot:run
 API disponible sur :
-http://localhost:8080
+👉 http://localhost:8080
 
 Frontend
 bash
@@ -85,7 +143,7 @@ cd Projet2/EtudiantFrontend
 npm install
 ng serve
 Interface disponible sur :
-http://localhost:4200
+👉 http://localhost:4200
 
 📄 Livrables OpenClassrooms
 Code backend corrigé et testé
@@ -96,8 +154,21 @@ Rapport de couverture Jacoco
 
 Rapport Cypress
 
-README structuré
+README structuré et mis à jour
 
-Dépôt GitHub propre et organisé (branche master) 
+Dépôt GitHub propre et organisé (branche master)
 
+🏁 Conclusion
+Ce projet démontre la capacité à :
 
+analyser un code existant
+
+corriger des dysfonctionnements
+
+améliorer la qualité logicielle
+
+ajouter des fonctionnalités (dont logout)
+
+tester efficacement une application
+
+documenter proprement le travail réalisé
