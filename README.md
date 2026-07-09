@@ -22,6 +22,8 @@ livrer une application fonctionnelle, testée et structurée
 
 ajouter une nouvelle fonctionnalité : Logout (backend + frontend)
 
+corriger le bouton Retour de la page “Détails Étudiant” (frontend)
+
 🗂️ Structure du dépôt
 Code
 openclassroomsProject/
@@ -38,8 +40,7 @@ openclassroomsProject/
         ├── angular.json
         └── package.json
 🔧 Backend — Spring Boot (Java)
-Fonctionnalités principales :
-
+Fonctionnalités principales
 API REST pour la gestion des étudiants
 
 Authentification JWT (login + logout)
@@ -69,15 +70,14 @@ Code
 POST /api/auth/logout
 Fonctionnement :
 
-Invalidation du token côté serveur (selon stratégie choisie)
+Invalidation du token côté serveur
 
 Réponse confirmant la déconnexion
 
 Le frontend supprime le token localement
 
 🎨 Frontend — Angular
-Fonctionnalités principales :
-
+Fonctionnalités principales
 Interface de gestion des étudiants
 
 Authentification JWT (login + logout)
@@ -87,14 +87,6 @@ Formulaires réactifs
 Navigation protégée via AuthGuard
 
 Gestion des erreurs utilisateur
-
-✔ Tests frontend
-Tests E2E : Cypress
-
-Tests unitaires : Jasmine/Karma ou Jest
-
-Couverture disponible dans :
-EtudiantFrontend/coverage/
 
 ✔ Nouvelle fonctionnalité : Logout (Frontend)
 Ajout d’un bouton Déconnexion :
@@ -112,6 +104,29 @@ Redirection automatique vers /login
 
 Désactivation des routes protégées
 
+✔ Correction : Bouton Retour sur la page “Détails Étudiant”
+Un dysfonctionnement empêchait le bouton Retour de fonctionner correctement sur la page de détails d’un étudiant.
+
+🔧 Correction apportée
+Le bouton utilise désormais correctement le router Angular :
+
+ts
+goBack() {
+  this.router.navigate(['/students']);
+}
+Et dans le template :
+
+html
+<button class="btn btn-secondary" (click)="goBack()">Retour</button>
+🎯 Effets de la correction
+Retour fonctionnel vers la liste des étudiants
+
+Navigation cohérente et fluide
+
+Amélioration de l’expérience utilisateur
+
+Tests E2E Cypress mis à jour pour valider le comportement
+
 🧪 Tests & Qualité
 Backend
 Tests unitaires : services, contrôleurs
@@ -122,7 +137,7 @@ Couverture Jacoco :
 EtudiantBackend/target/site/jacoco/
 
 Frontend
-Tests E2E Cypress : login, logout, CRUD étudiant
+Tests E2E Cypress : login, logout, CRUD étudiant, retour depuis la page détails
 
 Tests unitaires Angular
 
@@ -168,6 +183,8 @@ corriger des dysfonctionnements
 améliorer la qualité logicielle
 
 ajouter des fonctionnalités (dont logout)
+
+corriger la navigation (bouton Retour sur la page détails)
 
 tester efficacement une application
 
