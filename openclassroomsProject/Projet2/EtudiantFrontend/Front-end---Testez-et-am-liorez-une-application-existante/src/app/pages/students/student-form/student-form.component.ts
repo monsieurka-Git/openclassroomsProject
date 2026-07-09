@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { StudentService } from '../../../services/student.service';
 import { Student } from '../../../shared/student.model';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-student-form',
   standalone: true,
   templateUrl: './student-form.component.html',
-  imports: [FormsModule, CommonModule]
+  imports: [FormsModule, CommonModule, RouterModule]
 })
 export class StudentFormComponent implements OnInit {
 

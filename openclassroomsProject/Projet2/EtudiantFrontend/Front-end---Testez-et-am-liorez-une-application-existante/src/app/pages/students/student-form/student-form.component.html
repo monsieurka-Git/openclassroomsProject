@@ -5,5 +5,8 @@
   <input [(ngModel)]="student.lastName" name="lastName" placeholder="Nom" required>
   <input [(ngModel)]="student.email" name="email" placeholder="Email" required>
 
-  <button type="submit">Enregistrer</button>
+  <div>
+    <button type="button" routerLink="/students">Retour</button>
+    <button type="submit">Enregistrer</button>
+  </div>
 </form>
