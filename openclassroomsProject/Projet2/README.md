@@ -160,7 +160,7 @@ ng serve
 Interface disponible sur :
 👉 http://localhost:4200
 
-Instructions pour cloner et tester le projet
+*****************************************Instructions pour cloner et tester le projet puis installation***************************************************
 Code
 git clone https://github.com/monsieurka-Git/openclassroomsProject.git
 
