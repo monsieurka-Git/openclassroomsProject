@@ -160,6 +160,33 @@ ng serve
 Interface disponible sur :
 👉 http://localhost:4200
 
+Instructions pour cloner et tester le projet
+Code
+git clone https://github.com/monsieurka-Git/openclassroomsProject.git
+
+Le Projet 2 se trouve dans :
+Code
+openclassroomsProject/Projet2
+
+Front-end
+Code
+cd Projet2\EtudiantFrontend\Front-end---Testez-et-am-liorez-une-application-existante
+npm install
+npm start
+npm test
+
+Back-end
+Code
+cd Projet2\EtudiantBackend\Back-end---Testez-et-am-liorez-une-application-existante
+npm install
+npm start
+npm test
+
+Tests E2E
+Code
+cd Projet2\EtudiantFrontend\Front-end---Testez-et-am-liorez-une-application-existante\cypress\e2e
+npx cypress open
+
 
 📄 Livrables OpenClassrooms
 Code backend corrigé et testé
