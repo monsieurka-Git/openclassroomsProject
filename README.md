@@ -1,191 +1,142 @@
-📘 Projet 2 — Testez et améliorez une application existante
-Dépôt : openclassroomsProject  
-Étudiant : Karim MEHENNI
+Parcours Expert DevOps (RNCP 41330)
+Les projets ci-dessous correspondent aux blocs de compétences officiels du diplôme (réf. PDF) .
 
-📌 Description du projet
-Ce dépôt contient le travail réalisé dans le cadre du Projet 2 du parcours Expert DevOps d’OpenClassrooms :
-Testez et améliorez une application existante (Backend & Frontend).
+🧱 RNCP41330BC01 — Analyse & Conception
+Projet 7 — Analysez une infrastructure et un stack technique
+Audit technique
 
-L’objectif du projet est de :
+Analyse des processus DevOps existants
 
-analyser une application existante (Java Spring Boot + Angular)
+Définition des solutions futures
 
-corriger les anomalies
+Veille technologique
 
-améliorer la qualité du code
+Projet 9 — Analysez une infrastructure actuelle et concevez une stratégie DevOps
+Analyse approfondie des besoins
 
-mettre en place une stratégie de tests complète
+Conception d’une architecture CI/CD complète
 
-produire un rapport de couverture (Jacoco / Cypress / Jest)
+Modélisation des interactions pipeline
 
-livrer une application fonctionnelle, testée et structurée
+Stratégie d’amélioration continue
 
-ajouter une nouvelle fonctionnalité : Logout (backend + frontend)
+🧱 RNCP41330BC02 — Développement, tests & maintenance
+Projet 1 — Démarrez votre formation d’expert DevOps
+Planification de la formation
 
-corriger le bouton Retour de la page “Détails Étudiant” (frontend)
+Organisation du parcours
 
-🗂️ Structure du dépôt
+Projet 2 — Testez et améliorez une application existante
+Développement back-end & front-end
+
+Tests unitaires & intégration
+
+Débogage & maintenance
+
+Projet 3 — Pilotez le développement d’une solution informatique
+Architecture front-end & back-end
+
+API REST
+
+Tests automatisés
+
+Documentation technique
+
+Revue de code
+
+🧱 RNCP41330BC03 — Intégration & Déploiement continu (CI/CD)
+Projet 4 — GitLab CI, Docker & Kubernetes
+Pipelines CI/CD GitLab
+
+Conteneurisation Docker
+
+Orchestration Kubernetes
+
+Scripts Python & Bash
+
+Projet 5 — Terraform, Ansible & ELK
+Infrastructure-as-Code (IaC)
+
+Automatisation Ansible
+
+Monitoring ELK
+
+Déploiement AWS (EC2, RDS, S3)
+
+Projet 6 — Gérez une démarche DevOps
+DevSecOps
+
+Versioning & release automation
+
+Pipelines avancés CI/CD
+
+Disponibilité & performance du SI
+
+🧱 RNCP41330BC04 — Management & Pilotage DevOps
+Projet 8 — Managez et encadrez les équipes d’un projet DevOps
+Méthodologie Agile / Scrum
+
+Suivi d’équipe technique
+
+Plan de formation
+
+Roadmap DevOps
+
+🛠️ Compétences techniques développées
+🔹 Développement
+Java, Spring Boot, Angular, TypeScript, SQL
+
+🔹 DevOps
+GitLab CI/CD
+
+Docker, Docker Compose, Kubernetes
+
+Terraform, Ansible
+
+ELK (Elasticsearch, Logstash, Kibana)
+
+AWS (EC2, RDS, S3)
+
+Python, Bash
+
+YAML, Gradle
+
+SonarQube
+
+Linux administration
+
+🔄 Workflow Git utilisé
+Chaque User Story ou projet est développé dans une branche dédiée :
+
 Code
-openclassroomsProject/
-└── Projet2/
-    ├── EtudiantBackend/
-    │   ├── src/
-    │   ├── pom.xml
-    │   ├── target/
-    │   └── rapport_jacoco/
-    └── EtudiantFrontend/
-        ├── src/
-        ├── cypress/
-        ├── coverage/
-        ├── angular.json
-        └── package.json
-🔧 Backend — Spring Boot (Java)
-Fonctionnalités principales
-API REST pour la gestion des étudiants
+develop
+feature/US03-register
+feature/US04-login
+feature/US01-upload-authenticated
+feature/P4-CI-CD
+feature/P5-IaC
+feature/P6-DevSecOps
+...
+Processus :
 
-Authentification JWT (login + logout)
+Création de la branche
 
-Gestion des utilisateurs
+Développement
 
-Gestion des étudiants (CRUD)
+Tests (Swagger, Postman, CI/CD, scripts)
 
-Validation des données
+Commit + Push
 
-Gestion centralisée des erreurs (GlobalExceptionHandler)
+Pull Request vers develop
 
-✔ Tests backend
-Tests unitaires : JUnit, Mockito
+Validation & merge
 
-Tests d’intégration : MockMvc
-
-Rapport de couverture : Jacoco
-
-Couverture disponible dans :
-EtudiantBackend/target/site/jacoco/index.html
-
-✔ Nouvelle fonctionnalité : Logout (Backend)
-Endpoint ajouté :
-
-Code
-POST /api/auth/logout
-Fonctionnement :
-
-Invalidation du token côté serveur
-
-Réponse confirmant la déconnexion
-
-Le frontend supprime le token localement
-
-🎨 Frontend — Angular
-Fonctionnalités principales
-Interface de gestion des étudiants
-
-Authentification JWT (login + logout)
-
-Formulaires réactifs
-
-Navigation protégée via AuthGuard
-
-Gestion des erreurs utilisateur
-
-✔ Nouvelle fonctionnalité : Logout (Frontend)
-Ajout d’un bouton Déconnexion :
-
-ts
-logout() {
-  localStorage.removeItem('token');
-  this.router.navigate(['/login']);
-}
-Effets :
-
-Suppression du token JWT
-
-Redirection automatique vers /login
-
-Désactivation des routes protégées
-
-✔ Correction : Bouton Retour sur la page “Détails Étudiant”
-Un dysfonctionnement empêchait le bouton Retour de fonctionner correctement sur la page de détails d’un étudiant.
-
-🔧 Correction apportée
-Le bouton utilise désormais correctement le router Angular :
-
-ts
-goBack() {
-  this.router.navigate(['/students']);
-}
-Et dans le template :
-
-html
-<button class="btn btn-secondary" (click)="goBack()">Retour</button>
-🎯 Effets de la correction
-Retour fonctionnel vers la liste des étudiants
-
-Navigation cohérente et fluide
-
-Amélioration de l’expérience utilisateur
-
-Tests E2E Cypress mis à jour pour valider le comportement
-
-🧪 Tests & Qualité
-Backend
-Tests unitaires : services, contrôleurs
-
-Tests d’intégration : endpoints REST
-
-Couverture Jacoco :
-EtudiantBackend/target/site/jacoco/
-
-Frontend
-Tests E2E Cypress : login, logout, CRUD étudiant, retour depuis la page détails
-
-Tests unitaires Angular
-
-Couverture :
-EtudiantFrontend/coverage/
-
-🚀 Lancer le projet
-Backend
-bash
-cd Projet2/EtudiantBackend
-mvn spring-boot:run
-API disponible sur :
-👉 http://localhost:8080
-
-Frontend
-bash
-cd Projet2/EtudiantFrontend
-npm install
-ng serve
-Interface disponible sur :
-👉 http://localhost:4200
-
-📄 Livrables OpenClassrooms
-Code backend corrigé et testé
-
-Code frontend corrigé et testé
-
-Rapport de couverture Jacoco
-
-Rapport Cypress
-
-README structuré et mis à jour
-
-Dépôt GitHub propre et organisé (branche master)
+📞 Contact
+Karim — Ingénieur Systèmes & Réseaux, Développeur Full-Stack & Expert DevOps  
+📍 Marseille, France
+📧 monsieurka@yahoo.fr
+💼 GitHub : https://github.com/monsieurka-Git (github.com in Bing)
 
 🏁 Conclusion
-Ce projet démontre la capacité à :
-
-analyser un code existant
-
-corriger des dysfonctionnements
-
-améliorer la qualité logicielle
-
-ajouter des fonctionnalités (dont logout)
-
-corriger la navigation (bouton Retour sur la page détails)
-
-tester efficacement une application
-
-documenter proprement le travail réalisé
+Ce dépôt reflète l’ensemble de mon parcours OpenClassrooms, du développement logiciel jusqu’à l’expertise DevOps.
+Il constitue une base solide pour démontrer mes compétences techniques, ma capacité à piloter des projets complexes et à mettre en œuvre des solutions modernes de développement, déploiement et automatisation.
