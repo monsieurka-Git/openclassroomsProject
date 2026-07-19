@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">etudiant-backend</a> &gt; <a href="index.source.html" class="el_package">com.openclassrooms.etudiant.service</a> &gt; <span class="el_source">UserService.java</span></div><h1>UserService.java</h1><pre class="source lang-java linenums">package com.openclassrooms.etudiant.service;
+
+import com.openclassrooms.etudiant.entities.User;
+import com.openclassrooms.etudiant.repository.UserRepository;
+import com.openclassrooms.etudiant.dto.RegisterDTO;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+
+import java.util.List;
+
+<span class="fc" id="L16">@Slf4j</span>
+@Service
+@Transactional
+<span class="fc" id="L19">@RequiredArgsConstructor</span>
+public class UserService {
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+
+    // ---------------------------
+    // REGISTER
+    // ---------------------------
+    public void register(User user) {
+<span class="fc" id="L30">        Assert.notNull(user, &quot;User must not be null&quot;);</span>
+
+<span class="fc" id="L32">        user.setLogin(user.getLogin().toLowerCase());</span>
+<span class="fc" id="L33">        log.info(&quot;Registering new user&quot;);</span>
+
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        if (userRepository.findByLogin(user.getLogin()).isPresent()) {</span>
+<span class="fc" id="L36">            throw new IllegalArgumentException(&quot;User with login &quot; + user.getLogin() + &quot; already exists&quot;);</span>
+        }
+
+<span class="fc" id="L39">        user.setPassword(passwordEncoder.encode(user.getPassword()));</span>
+<span class="fc" id="L40">        userRepository.save(user);</span>
+<span class="fc" id="L41">    }</span>
+
+    // ---------------------------
+    // LOGIN
+    // ---------------------------
+    public String login(String login, String password) {
+<span class="fc" id="L47">        Assert.notNull(login, &quot;Login must not be null&quot;);</span>
+<span class="fc" id="L48">        Assert.notNull(password, &quot;Password must not be null&quot;);</span>
+
+<span class="fc" id="L50">        login = login.toLowerCase();</span>
+<span class="fc" id="L51">        log.info(&quot;Tentative de login pour {}&quot;, login);</span>
+
+<span class="fc" id="L53">        User user = userRepository.findByLogin(login)</span>
+<span class="fc" id="L54">                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Login incorrect&quot;));</span>
+
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        if (!passwordEncoder.matches(password, user.getPassword())) {</span>
+<span class="fc" id="L57">            log.warn(&quot;Mot de passe incorrect pour {}&quot;, login);</span>
+<span class="fc" id="L58">            throw new IllegalArgumentException(&quot;Mot de passe incorrect&quot;);</span>
+        }
+
+<span class="fc" id="L61">        log.info(&quot;Authentification réussie pour {}&quot;, login);</span>
+<span class="fc" id="L62">        return jwtService.generateToken(user);</span>
+    }
+
+    // ---------------------------
+    // GET ALL USERS
+    // ---------------------------
+    public List&lt;User&gt; getAllUsers() {
+<span class="fc" id="L69">        return userRepository.findAll();</span>
+    }
+
+    // ---------------------------
+    // GET USER BY LOGIN
+    // ---------------------------
+    public User getUserByLogin(String login) {
+<span class="fc" id="L76">        return userRepository.findByLogin(login.toLowerCase())</span>
+<span class="fc" id="L77">                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;User not found: &quot; + login));</span>
+    }
+
+    // ---------------------------
+    // DELETE USER
+    // ---------------------------
+    public void deleteUser(String login) {
+<span class="fc" id="L84">        User user = getUserByLogin(login);</span>
+<span class="fc" id="L85">        userRepository.delete(user);</span>
+<span class="fc" id="L86">    }</span>
+
+    // ---------------------------
+    // UPDATE USER (OPTIONNEL)
+    // ---------------------------
+    public User updateUser(String login, RegisterDTO dto) {
+<span class="fc" id="L92">        User user = getUserByLogin(login);</span>
+
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">        if (dto.getFirstName() != null) user.setFirstName(dto.getFirstName());</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">        if (dto.getLastName() != null) user.setLastName(dto.getLastName());</span>
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">        if (dto.getPassword() != null) {</span>
+<span class="fc" id="L97">            user.setPassword(passwordEncoder.encode(dto.getPassword()));</span>
+        }
+
+<span class="fc" id="L100">        return userRepository.save(user);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

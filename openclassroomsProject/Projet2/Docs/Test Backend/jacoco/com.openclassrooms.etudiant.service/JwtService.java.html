@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JwtService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">etudiant-backend</a> &gt; <a href="index.source.html" class="el_package">com.openclassrooms.etudiant.service</a> &gt; <span class="el_source">JwtService.java</span></div><h1>JwtService.java</h1><pre class="source lang-java linenums">package com.openclassrooms.etudiant.service;
+
+import com.openclassrooms.etudiant.entities.User;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Service;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+
+@Service
+<span class="fc" id="L13">public class JwtService {</span>
+
+<span class="fc" id="L15">    private static final byte[] SECRET = &quot;12345678901234567890123456789012&quot;.getBytes(StandardCharsets.UTF_8);</span>
+
+    public String generateToken(User user) {
+
+<span class="fc" id="L19">        return Jwts.builder()</span>
+<span class="fc" id="L20">                .setSubject(user.getLogin())</span>
+<span class="fc" id="L21">                .claim(&quot;id&quot;, user.getId())</span>
+<span class="fc" id="L22">                .claim(&quot;firstName&quot;, user.getFirstName())</span>
+<span class="fc" id="L23">                .claim(&quot;lastName&quot;, user.getLastName())</span>
+<span class="fc" id="L24">                .setIssuedAt(new Date())</span>
+<span class="fc" id="L25">                .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 24h</span>
+<span class="fc" id="L26">                .signWith(Keys.hmacShaKeyFor(SECRET), SignatureAlgorithm.HS256)</span>
+<span class="fc" id="L27">                .compact();</span>
+    }  // extract login from token
+    public String extractLogin(String token) {
+<span class="fc" id="L30">    return Jwts.parserBuilder()</span>
+<span class="fc" id="L31">            .setSigningKey(SECRET)</span>
+<span class="fc" id="L32">            .build()</span>
+<span class="fc" id="L33">            .parseClaimsJws(token)</span>
+<span class="fc" id="L34">            .getBody()</span>
+<span class="fc" id="L35">            .getSubject();</span>
+    } // Vérifie si le token est valide pour l'utilisateur donné
+    public boolean isTokenValid(String token, User user) {
+<span class="fc" id="L38">    String login = extractLogin(token);</span>
+<span class="fc" id="L39">    return login.equals(user.getLogin());</span>
+}
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
